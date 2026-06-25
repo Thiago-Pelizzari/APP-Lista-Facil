@@ -52,9 +52,9 @@ const SIZES = {
 // 🗂️ DADOS MOCKADOS DE INICIALIZAÇÃO
 // ==========================================
 const INITIAL_ITEMS = [
-  { id: '1', name: 'Arroz 5kg', quantity: '1 pct', location: 'Supermercado Extra', checked: false },
-  { id: '2', name: 'Feijão Carioca', quantity: '2 kg', location: 'Mercado Central', checked: true },
-  { id: '3', name: 'Leite Integral', quantity: '6 caixas', location: 'Pão de Açúcar', checked: false },
+  { id: '1', name: 'Arroz 5kg', quantity: '1 pct', location: 'Supermercado Extra', category: 'Hortifruti', checked: false },
+  { id: '2', name: 'Feijão Carioca', quantity: '2 kg', location: 'Mercado Central', category: 'Geral', checked: true },
+  { id: '3', name: 'Leite Integral', quantity: '6 caixas', location: 'Pão de Açúcar', category: 'Laticínios', checked: false },
 ];
 
 const CATEGORIES = [
@@ -111,6 +111,7 @@ export default function App() {
   const [formName, setFormName] = useState('');
   const [formQuantity, setFormQuantity] = useState('');
   const [formLocation, setFormLocation] = useState('');
+  const [formCategory, setFormCategory] = useState('');
 
   // Navegar entre telas
   const navigateTo = (screenName, params = {}) => {
@@ -140,6 +141,7 @@ export default function App() {
       name: formName.trim(),
       quantity: formQuantity.trim() || '1 un',
       location: formLocation.trim() || 'Geral',
+      category: formCategory || 'Geral',
       checked: false,
     };
 
@@ -149,6 +151,7 @@ export default function App() {
     setFormName('');
     setFormQuantity('');
     setFormLocation('');
+    setFormCategory('');
 
     // Voltar para a lista
     setScreen('List');
@@ -258,6 +261,11 @@ export default function App() {
                   <View style={styles.qtyBadge}>
                     <Text style={styles.qtyBadgeText}>{item.quantity}</Text>
                   </View>
+                  {item.category && item.category !== 'Geral' && (
+                    <View style={[styles.qtyBadge, { backgroundColor: COLORS.lightGreen }]}>
+                      <Text style={[styles.qtyBadgeText, { color: COLORS.primary }]}>{item.category}</Text>
+                    </View>
+                  )}
                   <View style={styles.locBadge}>
                     <Ionicons name="location-outline" size={12} color={COLORS.textMedium} style={{ marginRight: 2 }} />
                     <Text style={styles.locBadgeText} numberOfLines={1}>{item.location}</Text>
@@ -346,6 +354,39 @@ export default function App() {
                 placeholderTextColor={COLORS.textLight}
                 style={styles.textInput}
               />
+            </View>
+
+            {/* Seletor de Categoria */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Categoria do Item</Text>
+              <View style={styles.categoryGrid}>
+                {CATEGORIES.map((cat) => {
+                  const isSelected = formCategory === cat.name;
+                  return (
+                    <TouchableOpacity
+                      key={cat.id}
+                      style={[
+                        styles.catOption,
+                        isSelected && styles.catOptionSelected,
+                      ]}
+                      onPress={() => setFormCategory(isSelected ? '' : cat.name)}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons
+                        name={cat.icon}
+                        size={16}
+                        color={isSelected ? COLORS.white : cat.color}
+                      />
+                      <Text style={[
+                        styles.catOptionText,
+                        isSelected && styles.catOptionTextSelected,
+                      ]}>
+                        {cat.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
           </View>
 
@@ -798,6 +839,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     fontSize: 14,
     color: COLORS.textDark,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 4,
+  },
+  catOption: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusMd,
+    paddingVertical: 10,
+    marginRight: 8,
+    marginBottom: 8,
+    width: '30%',
+  },
+  catOptionSelected: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  catOptionText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: COLORS.textDark,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  catOptionTextSelected: {
+    color: COLORS.white,
   },
   formActions: {
     marginBottom: SPACING.xl,
